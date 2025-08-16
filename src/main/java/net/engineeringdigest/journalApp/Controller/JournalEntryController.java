@@ -1,5 +1,7 @@
 package net.engineeringdigest.journalApp.Controller;
 
+import net.engineeringdigest.journalApp.Dto.ApiResponse;
+import net.engineeringdigest.journalApp.Dto.JournalEntryDto;
 import net.engineeringdigest.journalApp.Entity.JournalEntry;
 import net.engineeringdigest.journalApp.Service.JournalService;
 import org.bson.types.ObjectId;
@@ -20,34 +22,51 @@ public class JournalEntryController {
 
 
    // http://localhost:8080/journal/api/v1/entries
-    @GetMapping("/entries")
-    public ResponseEntity<List<JournalEntry>>getAll(JournalEntry journalEntry){
-        List<JournalEntry> entry = journalService.RegisteredAll(journalEntry);
-        return new ResponseEntity<>(entry,HttpStatus.OK);
-    }
+   @GetMapping("/entries")
+   public ResponseEntity<ApiResponse<List<JournalEntry>>> getAll() {
+       List<JournalEntry> entries = journalService.findAll();
+       String message = entries.isEmpty() ? "No journal entries found." : "Journal entries retrieved successfully.";
+       return ResponseEntity.ok(new ApiResponse<>("success", message, entries));
+   }
 
     @PostMapping("/registry")
-    public ResponseEntity<JournalEntry> createEntry(
-            @RequestBody JournalEntry journalEntry
-    ){
+    public ResponseEntity<ApiResponse<JournalEntryDto>> createEntry(@RequestBody JournalEntryDto journalEntry) {
         journalEntry.setDate(LocalDateTime.now());
-        JournalEntry savedEntry = journalService.saveEntry(journalEntry);
-        return new ResponseEntity<>(savedEntry, HttpStatus.CREATED);
+        JournalEntryDto savedEntry = journalService.saveEntry(journalEntry);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new ApiResponse<>("success", "Journal entry created successfully.", savedEntry));
     }
 
     @GetMapping("/entries/{id}")
-    public ResponseEntity<JournalEntry> getEntryById(@PathVariable ObjectId id) {
-        JournalEntry entryById = journalService.getEntryById(id);
-        return new ResponseEntity<>(entryById, HttpStatus.OK);
+    public ResponseEntity<ApiResponse<JournalEntry>> getEntryById(@PathVariable ObjectId id) {
+        JournalEntry entry = journalService.getEntryById(id);
+        if (entry != null) {
+            return ResponseEntity.ok(new ApiResponse<>("success", "Journal entry found.", entry));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse<>("error", "Journal entry not found for id: " + id, null));
+        }
     }
+
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<JournalEntry> deleteEntryById(@PathVariable ObjectId id) {
-        journalService.deleteEntryById(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public ResponseEntity<ApiResponse<Object>> deleteEntryById(@PathVariable ObjectId id) {
+        JournalEntry entry = journalService.getEntryById(id);
+        if (entry != null) {
+            journalService.deleteEntryById(id);
+            return ResponseEntity.ok(new ApiResponse<>("success", "Journal entry deleted successfully.", null));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse<>("error", "Journal entry not found for id: " + id, null));
+        }
     }
     @PutMapping("/update/{id}")
-    public ResponseEntity<JournalEntry> updateEntryById(@PathVariable ObjectId id, @RequestBody JournalEntry updatedEntry) {
+    public ResponseEntity<ApiResponse<JournalEntry>> updateEntryById(@PathVariable ObjectId id, @RequestBody JournalEntryDto updatedEntry) {
         JournalEntry entry = journalService.updateEntryById(id, updatedEntry);
-        return new ResponseEntity<>(entry, HttpStatus.OK);
+        if (entry != null) {
+            return ResponseEntity.ok(new ApiResponse<>("success", "Journal entry updated successfully.", entry));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse<>("error", "Journal entry not found for id: " + id, null));
+        }
     }
 }
