@@ -1,11 +1,12 @@
 package net.engineeringdigest.journalApp.Service;
 
+import net.engineeringdigest.journalApp.Dto.JournalEntryDto;
 import net.engineeringdigest.journalApp.Entity.JournalEntry;
 import net.engineeringdigest.journalApp.Repository.JournalEntryRepository;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
 @Service
 public class JournalService {
 
@@ -16,35 +17,35 @@ private JournalEntryRepository journalEntryRepository;
         this.journalEntryRepository = journalEntryRepository;
     }
 
-    public JournalEntry saveEntry(JournalEntry journalEntry){
-        JournalEntry save = journalEntryRepository.save(journalEntry);
-
-        return save;
+    public JournalEntryDto saveEntry(JournalEntryDto journalEntryDto){
+        JournalEntry journalEntryToSave = new JournalEntry();
+        journalEntryToSave.setTitle(journalEntryDto.getTitle());
+        journalEntryToSave.setContent(journalEntryDto.getContent());
+        journalEntryToSave.setDate(journalEntryDto.getDate());
+        JournalEntry savedEntry = journalEntryRepository.save(journalEntryToSave);
+        journalEntryDto.setId(savedEntry.getId());
+        return journalEntryDto;
     }
 
-    public List<JournalEntry> RegisteredAll(JournalEntry journalEntry){
-        List<JournalEntry> all = journalEntryRepository.findAll();
-        return all;
+    public List<JournalEntry> findAll(){
+        return journalEntryRepository.findAll();
     }
-    public JournalEntry getEntryById(String id) {
-        JournalEntry entryById = journalEntryRepository.findById(id).get();
-        return entryById;
+    public JournalEntry getEntryById(ObjectId id) {
+        return journalEntryRepository.findById(id).orElse(null);
     }
-    public void deleteEntryById(String id) {
+    public void deleteEntryById(ObjectId id) {
         journalEntryRepository.deleteById(id);
     }
 
-    public JournalEntry updateEntryById(String id, JournalEntry updatedEntry) {
-        JournalEntry existingEntry = journalEntryRepository.findById(id).orElse(null);
-        if (existingEntry == null) {
-            return null; // or throw an exception
-        }
-        // Update fields (example: title, content, date)
-        existingEntry.setTitle(updatedEntry.getTitle());
-        existingEntry.setContent(updatedEntry.getContent());
-        existingEntry.setDate(updatedEntry.getDate());
-        // Save and return updated entry
-        JournalEntry save = journalEntryRepository.save(existingEntry);
-        return save;
+    public JournalEntry updateEntryById(ObjectId id, JournalEntryDto updatedEntry) {
+        return journalEntryRepository.findById(id).map(existingEntry -> {
+            if (updatedEntry.getTitle() != null && !updatedEntry.getTitle().isEmpty()) {
+                existingEntry.setTitle(updatedEntry.getTitle());
+            }
+            if (updatedEntry.getContent() != null && !updatedEntry.getContent().isEmpty()) {
+                existingEntry.setContent(updatedEntry.getContent());
+            }
+            return journalEntryRepository.save(existingEntry);
+        }).orElse(null);
     }
 }
