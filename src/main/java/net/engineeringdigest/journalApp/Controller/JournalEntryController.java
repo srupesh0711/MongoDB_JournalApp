@@ -37,11 +37,13 @@ public class JournalEntryController {
         return new ResponseEntity<>(entryById, HttpStatus.OK);
     }
     @DeleteMapping("/delete/{id}")
-    public JournalEntry deleteEntryById(@PathVariable Long id) {
-        return null;
+    public ResponseEntity<JournalEntry> deleteEntryById(@PathVariable String id) {
+        journalService.deleteEntryById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     @PutMapping("/update/{id}")
-    public JournalEntry updateEntryById(@PathVariable Long id, @RequestBody JournalEntry updatedEntry) {
-        return null;
+    public ResponseEntity<JournalEntry> updateEntryById(@PathVariable String id, @RequestBody JournalEntry updatedEntry) {
+        JournalEntry entry = journalService.updateEntryById(id, updatedEntry);
+        return new ResponseEntity<>(entry, HttpStatus.OK);
     }
 }

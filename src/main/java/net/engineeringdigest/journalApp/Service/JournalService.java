@@ -30,4 +30,21 @@ private JournalEntryRepository journalEntryRepository;
         JournalEntry entryById = journalEntryRepository.findById(id).get();
         return entryById;
     }
+    public void deleteEntryById(String id) {
+        journalEntryRepository.deleteById(id);
+    }
+
+    public JournalEntry updateEntryById(String id, JournalEntry updatedEntry) {
+        JournalEntry existingEntry = journalEntryRepository.findById(id).orElse(null);
+        if (existingEntry == null) {
+            return null; // or throw an exception
+        }
+        // Update fields (example: title, content, date)
+        existingEntry.setTitle(updatedEntry.getTitle());
+        existingEntry.setContent(updatedEntry.getContent());
+        existingEntry.setDate(updatedEntry.getDate());
+        // Save and return updated entry
+        JournalEntry save = journalEntryRepository.save(existingEntry);
+        return save;
+    }
 }
