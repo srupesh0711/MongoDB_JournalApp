@@ -16,7 +16,7 @@ public class JournalEntryController {
 
 
 
-   // http://localhost:8080/journal/api/v1
+   // http://localhost:8080/journal/api/v1/entries
     @GetMapping("/entries")
     public ResponseEntity<List<JournalEntry>>getAll(JournalEntry journalEntry){
         List<JournalEntry> entry = journalService.RegisteredAll(journalEntry);
@@ -32,15 +32,18 @@ public class JournalEntryController {
     }
 
     @GetMapping("/entries/{id}")
-    public JournalEntry getEntryById(@PathVariable Long id) {
-    return null;
+    public ResponseEntity<JournalEntry> getEntryById(@PathVariable String id) {
+        JournalEntry entryById = journalService.getEntryById(id);
+        return new ResponseEntity<>(entryById, HttpStatus.OK);
     }
     @DeleteMapping("/delete/{id}")
-    public JournalEntry deleteEntryById(@PathVariable Long id) {
-        return null;
+    public ResponseEntity<JournalEntry> deleteEntryById(@PathVariable String id) {
+        journalService.deleteEntryById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     @PutMapping("/update/{id}")
-    public JournalEntry updateEntryById(@PathVariable Long id, @RequestBody JournalEntry updatedEntry) {
-        return null;
+    public ResponseEntity<JournalEntry> updateEntryById(@PathVariable String id, @RequestBody JournalEntry updatedEntry) {
+        JournalEntry entry = journalService.updateEntryById(id, updatedEntry);
+        return new ResponseEntity<>(entry, HttpStatus.OK);
     }
 }
