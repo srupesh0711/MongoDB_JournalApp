@@ -32,8 +32,9 @@ public class JournalEntryController {
     }
 
     @GetMapping("/entries/{id}")
-    public JournalEntry getEntryById(@PathVariable Long id) {
-    return null;
+    public ResponseEntity<JournalEntry> getEntryById(@PathVariable String id) {
+        JournalEntry entryById = journalService.getEntryById(id);
+        return new ResponseEntity<>(entryById, HttpStatus.OK);
     }
     @DeleteMapping("/delete/{id}")
     public JournalEntry deleteEntryById(@PathVariable Long id) {

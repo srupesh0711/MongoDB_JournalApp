@@ -26,4 +26,8 @@ private JournalEntryRepository journalEntryRepository;
         List<JournalEntry> all = journalEntryRepository.findAll();
         return all;
     }
+    public JournalEntry getEntryById(String id) {
+        JournalEntry entryById = journalEntryRepository.findById(id).get();
+        return entryById;
+    }
 }
