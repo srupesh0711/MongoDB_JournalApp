@@ -16,7 +16,7 @@ public class JournalEntryController {
 
 
 
-   // http://localhost:8080/journal/api/v1
+   // http://localhost:8080/journal/api/v1/entries
     @GetMapping("/entries")
     public ResponseEntity<List<JournalEntry>>getAll(JournalEntry journalEntry){
         List<JournalEntry> entry = journalService.RegisteredAll(journalEntry);
