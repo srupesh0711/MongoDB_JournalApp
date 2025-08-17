@@ -1,9 +1,12 @@
 package net.engineeringdigest.journalApp.Repository;
 
 import net.engineeringdigest.journalApp.Entity.JournalEntry;
-import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface JournalEntryRepository extends MongoRepository<JournalEntry, ObjectId> {
+import java.util.List;
 
+public interface JournalEntryRepository extends MongoRepository<JournalEntry, String> {
+
+    List<JournalEntry> findByUsername(String username);
+    long deleteByIdAndUsername(String id, String username);
 }

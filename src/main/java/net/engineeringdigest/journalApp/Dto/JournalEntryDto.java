@@ -1,14 +1,13 @@
 package net.engineeringdigest.journalApp.Dto;
 
 import lombok.Data;
-import org.bson.types.ObjectId;
 
-import java.time.LocalDateTime;
+import javax.validation.constraints.NotBlank;
 
 @Data
 public class JournalEntryDto {
-    private ObjectId id;
+    @NotBlank(message = "Title cannot be blank")
     private String title;
+    @NotBlank(message = "Content cannot be blank")
     private String content;
-    private LocalDateTime date;
 }
